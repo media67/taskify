@@ -43,7 +43,7 @@ const handler = async (data: InputType): Promise<ReturnType> => {
       select: { order: true },
     });
 
-    const newOrder = lastList ? (lastList.order = 1) : 1;
+    const newOrder = lastList ? (lastList.order + 1) : 1;
 
     list = await db.list.create({
       data: {
