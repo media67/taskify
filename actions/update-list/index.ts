@@ -2,8 +2,10 @@
 
 import { auth } from "@clerk/nextjs";
 import { revalidatePath } from "next/cache";
+import { ACTION, ENTITY_TYPE } from "@prisma/client";
 
 import { db } from "@/lib/db";
+import { CreateAuditLog } from "@/lib/create-audit-log";
 import { createSafeAction } from "@/lib/create-safe-action";
 
 import { UpdateList } from "./schema";
@@ -34,6 +36,14 @@ const handler = async (data: InputType): Promise<ReturnType> => {
         title,
       },
     });
+
+    await CreateAuditLog({
+      entityTitle: list.title,
+      entityId: list.id,
+      entityType: ENTITY_TYPE.LIST,
+      action: ACTION.DELETE
+    })
+
   } catch (error) {
     return {
       error: "Failed to update."
