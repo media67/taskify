@@ -8,12 +8,14 @@ import { List } from "@prisma/client";
 import { FormInput } from "@/components/form/form-input";
 import { useAction } from "@/hooks/use-action";
 import { updateList } from "@/actions/update-list";
+import { ListOptions } from "./list-options";
 
 interface ListHeaderProps {
   data: List;
+  onAddCard: () => void
 }
 
-export const ListHeader = ({ data }: ListHeaderProps) => {
+export const ListHeader = ({ data, onAddCard }: ListHeaderProps) => {
   const [title, setTitle] = useState(data.title);
   const [isEditing, setIsEditing] = useState(false);
 
@@ -56,8 +58,8 @@ export const ListHeader = ({ data }: ListHeaderProps) => {
   };
 
   const onBlur = () => {
-    formRef.current?.requestSubmit()
-  }
+    formRef.current?.requestSubmit();
+  };
 
   const onKeyDown = (e: KeyboardEvent) => {
     if (e.key === "Escape") formRef.current?.requestSubmit();
@@ -68,11 +70,7 @@ export const ListHeader = ({ data }: ListHeaderProps) => {
   return (
     <div className="pt-2 px-2 text-sm font-semibold flex justify-between items-start gap-x-2">
       {isEditing ? (
-        <form 
-        ref={formRef}
-        action={handleSubmit}
-        className="flex-1 px-[2px]"
-        >
+        <form ref={formRef} action={handleSubmit} className="flex-1 px-[2px]">
           <input hidden id="id" name="id" value={data.id} />
           <input hidden id="boardId" name="boardId" value={data.boardId} />
           <FormInput
@@ -93,6 +91,10 @@ export const ListHeader = ({ data }: ListHeaderProps) => {
           {title}
         </div>
       )}
+      <ListOptions
+        data={data}
+        onAddCard={onAddCard} 
+    />
     </div>
   );
 };
