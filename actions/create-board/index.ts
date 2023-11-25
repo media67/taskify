@@ -10,6 +10,7 @@ import { createSafeAction } from "@/lib/create-safe-action";
 
 import { InputType, ReturnType } from "./types";
 import { CreateBoard } from "./schema";
+import { incrementAvailableCount, hasAvailableCount } from "@/lib/org-limit";
 
 const handler = async (data: InputType): Promise<ReturnType> => {
   const { userId, orgId } = auth();
@@ -18,6 +19,14 @@ const handler = async (data: InputType): Promise<ReturnType> => {
     return {
       error: "Unauthorized",
     };
+  }
+
+  const canCreate = await hasAvailableCount()
+
+  if (!canCreate) {
+    return {
+      error: "You have reached your limit of free boards. Please upgrade to create more."
+    }
   }
 
   const { title, image } = data;
@@ -57,6 +66,9 @@ const handler = async (data: InputType): Promise<ReturnType> => {
       entityType: ENTITY_TYPE.BOARD,
       action: ACTION.CREATE
     })
+
+    await incrementAvailableCount()
+
   } catch (error) {
     return {
       error: "Failed to create."
